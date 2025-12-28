@@ -3,84 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onyx DEX - Swap Prototype Enhanced</title>
+    <title>Onyx DEX - Premium Prototype</title>
     <style>
-        /* ===== CSS RESET ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* ===== DESIGN SYSTEM ===== */
         :root {
-            /* Colors - Background */
-            --bg-primary: #0a0b0f;
-            --bg-secondary: #14151f;
-            --bg-card-dark: #1a1d29;
-            --bg-card-light: #252937;
+            --bg-primary: #070810;
+            --bg-secondary: #0d0f1a;
 
-            /* Colors - Accents */
-            --accent-green-primary: #00d395;
-            --accent-green-secondary: #10b981;
-            --accent-red-primary: #ff5252;
+            --accent-green: #00d395;
+            --accent-green-bright: #00ffb3;
             --accent-blue: #5b8cff;
+            --accent-blue-bright: #7ba4ff;
 
-            /* Colors - Text */
             --text-primary: #ffffff;
             --text-secondary: #8b8e98;
 
-            /* Spacing */
             --space-1: 8px;
             --space-1-5: 12px;
             --space-2: 16px;
             --space-3: 24px;
-            --space-4: 32px;
 
-            /* Border Radius */
             --radius-small: 8px;
             --radius-medium: 12px;
             --radius-large: 16px;
-
-            /* Typography */
-            --font-size-tiny: 11px;
-            --font-size-small: 12px;
-            --font-size-body: 14px;
-            --font-size-body-large: 16px;
-            --font-size-input: 18px;
-            --font-size-h3: 16px;
-            --font-size-h2: 20px;
-            --font-size-h1: 22px;
         }
 
-        /* ===== GLOBAL STYLES ===== */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
-            background: radial-gradient(ellipse at top, #14151f 0%, #0a0b0f 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', sans-serif;
+            background: #070810;
             color: var(--text-primary);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Subtle background pattern */
+        /* Cosmic background with multiple layers */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle at 20% 50%, rgba(91, 140, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 211, 149, 0.03) 0%, transparent 50%);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(91, 140, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(0, 211, 149, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, rgba(91, 140, 255, 0.08) 0%, transparent 50%);
+            animation: cosmic-drift 20s ease-in-out infinite alternate;
             pointer-events: none;
             z-index: 0;
         }
 
-        /* ===== CONTAINER ===== */
+        @keyframes cosmic-drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-10px, -10px) scale(1.05); }
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -104,40 +89,59 @@
             display: flex;
             align-items: center;
             gap: var(--space-1);
-            font-size: var(--font-size-h2);
+            font-size: 20px;
             font-weight: 600;
         }
 
         .logo-icon {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #5b8cff 0%, #00d395 100%);
+            background: linear-gradient(135deg, #5b8cff 0%, #00ffb3 100%);
             border-radius: 6px;
             box-shadow:
-                0 4px 12px rgba(91, 140, 255, 0.3),
-                0 0 20px rgba(0, 211, 149, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 0 30px rgba(0, 255, 179, 0.6),
+                0 0 60px rgba(91, 140, 255, 0.4),
+                0 4px 20px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+            animation: logo-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logo-pulse {
+            0%, 100% { box-shadow:
+                0 0 30px rgba(0, 255, 179, 0.6),
+                0 0 60px rgba(91, 140, 255, 0.4),
+                0 4px 20px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+            50% { box-shadow:
+                0 0 40px rgba(0, 255, 179, 0.8),
+                0 0 80px rgba(91, 140, 255, 0.5),
+                0 4px 20px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5); }
         }
 
         .menu-button {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-primary);
-            transition: all 200ms ease-out;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 250ms ease-out;
+            box-shadow:
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .menu-button:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(91, 140, 255, 0.3);
         }
 
         .menu-icon {
@@ -145,6 +149,7 @@
             height: 2px;
             background: var(--text-primary);
             position: relative;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
 
         .menu-icon::before,
@@ -155,6 +160,7 @@
             height: 2px;
             background: var(--text-primary);
             left: 0;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         }
 
         .menu-icon::before { top: -7px; }
@@ -166,7 +172,7 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
-            transition: all 250ms ease-out;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -175,66 +181,83 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00d395 0%, #10b981 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, #00ffb3 0%, #00d395 50%, #10b981 100%);
+            color: #000000;
             padding: 12px 20px;
             border-radius: var(--radius-medium);
-            font-size: var(--font-size-body);
+            font-size: 14px;
             min-width: 160px;
             height: 40px;
             box-shadow:
-                0 4px 16px rgba(0, 211, 149, 0.4),
-                0 8px 24px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+                0 0 30px rgba(0, 255, 179, 0.6),
+                0 0 60px rgba(0, 211, 149, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
             box-shadow:
-                0 6px 20px rgba(0, 211, 149, 0.5),
-                0 12px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                0 0 40px rgba(0, 255, 179, 0.8),
+                0 0 80px rgba(0, 211, 149, 0.5),
+                0 12px 48px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
             filter: brightness(1.1);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
         }
 
         .btn-primary.btn-large {
             width: 100%;
             height: 56px;
-            font-size: var(--font-size-body-large);
+            font-size: 16px;
             border-radius: 14px;
             padding: 16px var(--space-3);
-            box-shadow:
-                0 8px 24px rgba(0, 211, 149, 0.4),
-                0 12px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2),
-                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text-primary);
             padding: 6px 12px;
             border-radius: var(--radius-small);
-            font-size: var(--font-size-body);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-1px);
         }
 
         .btn-small {
             padding: 4px var(--space-1);
-            font-size: var(--font-size-small);
+            font-size: 12px;
             border-radius: 6px;
             font-weight: 500;
         }
@@ -243,16 +266,20 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             padding: var(--space-1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow:
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .icon-button:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(91, 140, 255, 0.3);
         }
 
         /* ===== MAIN LAYOUT ===== */
@@ -272,7 +299,6 @@
             max-width: 480px;
         }
 
-        /* ===== PAGE TITLE ===== */
         .page-title {
             display: flex;
             align-items: center;
@@ -282,9 +308,11 @@
         }
 
         .page-title h1 {
-            font-size: var(--font-size-h1);
+            font-size: 22px;
             font-weight: 600;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
         .title-actions {
@@ -292,33 +320,46 @@
             gap: var(--space-1);
         }
 
-        /* ===== CARDS - Enhanced Neomorphism ===== */
+        /* ===== CARDS - EXTREME NEOMORPHISM ===== */
         .card {
-            background: linear-gradient(145deg, #1e2230 0%, #181b26 100%);
+            background: linear-gradient(145deg, #1a1e2e 0%, #12151f 100%);
             border-radius: var(--radius-large);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.6),
-                0 4px 16px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+                0 0 60px rgba(91, 140, 255, 0.15),
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                0 10px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -2px 8px rgba(0, 0, 0, 0.4);
             position: relative;
         }
 
-        /* Subtle inner glow */
         .card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 40%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
             border-radius: var(--radius-large) var(--radius-large) 0 0;
             pointer-events: none;
         }
 
-        /* ===== SWAP CARD ===== */
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius-large);
+            padding: 1px;
+            background: linear-gradient(145deg, rgba(91, 140, 255, 0.3), rgba(0, 211, 149, 0.2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
         .swap-card {
             padding: 20px;
             margin-bottom: var(--space-1-5);
@@ -340,39 +381,42 @@
         }
 
         .swap-label {
-            font-size: var(--font-size-body);
+            font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .balance-section {
             display: flex;
             align-items: center;
             gap: var(--space-1);
-            font-size: var(--font-size-small);
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
         .swap-input-container {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius-medium);
             padding: 12px var(--space-2);
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 56px;
-            transition: all 250ms ease-out;
+            transition: all 300ms ease-out;
             box-shadow:
-                inset 0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(0, 0, 0, 0.3);
+                inset 0 4px 16px rgba(0, 0, 0, 0.6),
+                inset 0 2px 4px rgba(0, 0, 0, 0.5),
+                0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .swap-input-container:focus-within {
-            border-color: rgba(91, 140, 255, 0.5);
+            border-color: rgba(91, 140, 255, 0.6);
             box-shadow:
-                inset 0 2px 8px rgba(0, 0, 0, 0.4),
-                0 0 0 2px rgba(91, 140, 255, 0.2);
+                inset 0 4px 16px rgba(0, 0, 0, 0.6),
+                0 0 0 3px rgba(91, 140, 255, 0.3),
+                0 0 30px rgba(91, 140, 255, 0.4);
         }
 
         .swap-input {
@@ -380,9 +424,10 @@
             border: none;
             outline: none;
             color: var(--text-primary);
-            font-size: var(--font-size-input);
+            font-size: 18px;
             font-weight: 500;
             width: 50%;
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
         }
 
         .swap-input::placeholder {
@@ -394,20 +439,22 @@
             align-items: center;
             gap: var(--space-1);
             padding: var(--space-1) var(--space-1-5);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-small);
             cursor: pointer;
-            transition: all 200ms ease-out;
+            transition: all 250ms ease-out;
             box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .token-selector:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(91, 140, 255, 0.3);
         }
 
         .token-icon {
@@ -421,12 +468,13 @@
             font-size: 12px;
             font-weight: 600;
             box-shadow:
-                0 2px 8px rgba(91, 140, 255, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                0 0 20px rgba(91, 140, 255, 0.6),
+                0 4px 12px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .token-name {
-            font-size: var(--font-size-body-large);
+            font-size: 16px;
             font-weight: 500;
         }
 
@@ -449,34 +497,37 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(145deg, #1e2230, #181b26);
-            border: 3px solid var(--bg-primary);
+            background: linear-gradient(145deg, #1a1e2e, #12151f);
+            border: 3px solid #070810;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 250ms ease-out;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow:
-                0 4px 16px rgba(0, 0, 0, 0.6),
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 0 30px rgba(91, 140, 255, 0.4),
+                0 8px 32px rgba(0, 0, 0, 0.7),
+                0 4px 16px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .swap-switch:hover {
-            transform: scale(1.1) rotate(180deg);
+            transform: scale(1.15) rotate(180deg);
             box-shadow:
-                0 8px 24px rgba(0, 0, 0, 0.7),
-                0 4px 12px rgba(91, 140, 255, 0.3);
+                0 0 50px rgba(91, 140, 255, 0.6),
+                0 12px 48px rgba(0, 0, 0, 0.8),
+                0 0 80px rgba(0, 211, 149, 0.3);
         }
 
         /* ===== INFO PANEL ===== */
         .info-panel {
             padding: var(--space-2);
             margin-bottom: var(--space-1-5);
-            background: linear-gradient(145deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
             box-shadow:
-                inset 0 2px 12px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(0, 0, 0, 0.3);
+                inset 0 4px 20px rgba(0, 0, 0, 0.7),
+                inset 0 2px 8px rgba(0, 0, 0, 0.5),
+                0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .info-grid {
@@ -493,14 +544,15 @@
         }
 
         .info-label {
-            font-size: var(--font-size-small);
+            font-size: 12px;
             color: var(--text-secondary);
         }
 
         .info-value {
-            font-size: var(--font-size-body);
+            font-size: 14px;
             font-weight: 500;
             color: var(--text-primary);
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
         }
 
         .route-info {
@@ -508,7 +560,7 @@
             justify-content: space-between;
             align-items: center;
             padding-top: var(--space-1-5);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .route-left {
@@ -518,42 +570,46 @@
         }
 
         .route-type {
-            font-size: var(--font-size-body);
+            font-size: 14px;
             font-weight: 500;
         }
 
         .route-fee {
-            font-size: var(--font-size-body);
-            color: var(--accent-green-primary);
+            font-size: 14px;
+            color: var(--accent-green);
             padding: 4px var(--space-1);
-            background: rgba(0, 211, 149, 0.15);
+            background: rgba(0, 211, 149, 0.2);
             border-radius: 6px;
             box-shadow:
-                0 0 12px rgba(0, 211, 149, 0.2),
-                inset 0 1px 0 rgba(0, 211, 149, 0.2);
+                0 0 20px rgba(0, 211, 149, 0.4),
+                inset 0 1px 0 rgba(0, 255, 179, 0.3);
+            text-shadow: 0 0 10px rgba(0, 255, 179, 0.5);
         }
 
         /* ===== TOP POOLS ===== */
         .sidebar-header {
-            font-size: var(--font-size-h2);
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: var(--space-2);
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.5);
         }
 
         .pool-card {
             padding: var(--space-2);
             margin-bottom: var(--space-1-5);
             cursor: pointer;
-            transition: all 250ms ease-out;
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .pool-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow:
-                0 12px 40px rgba(0, 0, 0, 0.7),
-                0 8px 24px rgba(0, 211, 149, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 0 80px rgba(0, 211, 149, 0.2),
+                0 20px 80px rgba(0, 0, 0, 0.9),
+                0 12px 48px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .pool-header {
@@ -574,11 +630,12 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 2px solid var(--bg-primary);
+            border: 2px solid #070810;
             position: absolute;
             box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 0 20px rgba(91, 140, 255, 0.5),
+                0 4px 16px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .pool-icon:first-child {
@@ -592,12 +649,12 @@
         }
 
         .pool-name {
-            font-size: var(--font-size-body-large);
+            font-size: 16px;
             font-weight: 500;
         }
 
         .pool-subtitle {
-            font-size: var(--font-size-small);
+            font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: var(--space-1-5);
         }
@@ -610,7 +667,7 @@
         }
 
         .pool-amount {
-            font-size: var(--font-size-body);
+            font-size: 14px;
             color: var(--text-secondary);
         }
 
@@ -627,21 +684,22 @@
         }
 
         .metric-label {
-            font-size: var(--font-size-tiny);
+            font-size: 11px;
             color: var(--text-secondary);
         }
 
         .metric-value {
-            font-size: var(--font-size-body);
+            font-size: 14px;
             font-weight: 500;
         }
 
         .metric-value.positive {
-            color: var(--accent-green-primary);
-            text-shadow: 0 0 8px rgba(0, 211, 149, 0.3);
+            color: var(--accent-green-bright);
+            text-shadow:
+                0 0 15px rgba(0, 255, 179, 0.6),
+                0 0 30px rgba(0, 211, 149, 0.4);
         }
 
-        /* ===== ICONS (SVG) ===== */
         .icon {
             width: 20px;
             height: 20px;
@@ -650,9 +708,9 @@
             fill: none;
             stroke-linecap: round;
             stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -671,7 +729,6 @@
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <header class="header">
         <div class="logo">
             <div class="logo-icon"></div>
@@ -690,12 +747,9 @@
         </button>
     </header>
 
-    <!-- MAIN CONTAINER -->
     <div class="container">
         <div class="main-container">
-            <!-- SWAP AREA -->
             <div class="swap-area">
-                <!-- Page Title -->
                 <div class="page-title">
                     <h1>Swap</h1>
                     <div class="title-actions">
@@ -713,9 +767,7 @@
                     </div>
                 </div>
 
-                <!-- Swap Card -->
                 <div class="card swap-card">
-                    <!-- From Section -->
                     <div class="swap-section">
                         <div class="swap-header">
                             <span class="swap-label">From</span>
@@ -736,7 +788,6 @@
                         </div>
                     </div>
 
-                    <!-- Switch Button -->
                     <div class="swap-switch-container">
                         <button class="swap-switch" aria-label="Switch tokens">
                             <svg class="icon" viewBox="0 0 24 24">
@@ -746,7 +797,6 @@
                         </button>
                     </div>
 
-                    <!-- To Section -->
                     <div class="swap-section">
                         <div class="swap-header">
                             <span class="swap-label">To</span>
@@ -758,7 +808,7 @@
                         <div class="swap-input-container">
                             <input type="text" class="swap-input" placeholder="0.0" value="3.627746213" readonly>
                             <div class="token-selector">
-                                <div class="token-icon" style="background: linear-gradient(135deg, #00d395, #10b981);">G</div>
+                                <div class="token-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);">G</div>
                                 <span class="token-name">GNK</span>
                                 <svg class="icon dropdown-arrow" viewBox="0 0 24 24">
                                     <polyline points="6 9 12 15 18 9"></polyline>
@@ -768,7 +818,6 @@
                     </div>
                 </div>
 
-                <!-- Info Panel -->
                 <div class="card info-panel">
                     <div class="info-grid">
                         <div class="info-item">
@@ -798,7 +847,6 @@
                     </div>
                 </div>
 
-                <!-- Primary Action Button -->
                 <button class="btn btn-primary btn-large">
                     <svg class="icon" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
                         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
@@ -807,16 +855,14 @@
                 </button>
             </div>
 
-            <!-- SIDEBAR - TOP POOLS -->
             <div class="sidebar">
                 <h2 class="sidebar-header">Top Pools</h2>
 
-                <!-- Pool Card 1 -->
                 <div class="card pool-card">
                     <div class="pool-header">
                         <div class="pool-icons">
-                            <div class="pool-icon" style="background: linear-gradient(135deg, #00d395, #10b981);"></div>
-                            <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7b9eff);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7ba4ff);"></div>
                         </div>
                         <div>
                             <div class="pool-name">GNK/axlUSDC(neutron)</div>
@@ -839,11 +885,10 @@
                     </div>
                 </div>
 
-                <!-- Pool Card 2 -->
                 <div class="card pool-card">
                     <div class="pool-header">
                         <div class="pool-icons">
-                            <div class="pool-icon" style="background: linear-gradient(135deg, #00d395, #10b981);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
                             <div class="pool-icon" style="background: linear-gradient(135deg, #10b981, #00d395);"></div>
                         </div>
                         <div>
@@ -871,32 +916,26 @@
     </div>
 
     <script>
-        // Basic interactivity
         document.querySelector('.swap-switch').addEventListener('click', function() {
             const fromInput = document.querySelector('.swap-section:first-child .swap-input');
             const toInput = document.querySelector('.swap-section:last-child .swap-input');
 
-            // Swap values
             const temp = fromInput.value;
             fromInput.value = toInput.value;
             toInput.value = temp;
 
-            // Visual feedback
-            this.style.transform = 'scale(0.9) rotate(180deg)';
+            this.style.transform = 'scale(0.85) rotate(180deg)';
             setTimeout(() => {
                 this.style.transform = '';
             }, 200);
         });
 
-        // Pool card click
         document.querySelectorAll('.pool-card').forEach(card => {
             card.addEventListener('click', function() {
-                console.log('Pool card clicked');
-                // Add visual feedback
-                this.style.transform = 'translateY(-4px)';
+                this.style.transform = 'translateY(-6px) scale(1.03)';
                 setTimeout(() => {
                     this.style.transform = '';
-                }, 100);
+                }, 150);
             });
         });
     </script>
