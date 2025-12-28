@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onyx DEX - Swap Prototype</title>
+    <style>
+        /* ===== CSS RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===== DESIGN SYSTEM ===== */
+        :root {
+            /* Colors - Background */
+            --bg-primary: #0f1015;
+            --bg-secondary: #1a1d29;
+            --bg-card-start: #2a2d3a;
+            --bg-card-end: #1f2230;
+
+            /* Colors - Accents */
+            --accent-green-primary: #00d395;
+            --accent-green-secondary: #10b981;
+            --accent-red-primary: #ff5252;
+            --accent-red-secondary: #ef4444;
+            --accent-blue: #5b8cff;
+
+            /* Colors - Text */
+            --text-primary: #ffffff;
+            --text-secondary: #8b8e98;
+
+            /* Spacing (8px grid) */
+            --space-1: 8px;
+            --space-1-5: 12px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+
+            /* Border Radius */
+            --radius-small: 8px;
+            --radius-medium: 12px;
+            --radius-large: 16px;
+
+            /* Typography */
+            --font-size-tiny: 11px;
+            --font-size-small: 12px;
+            --font-size-body: 14px;
+            --font-size-body-large: 16px;
+            --font-size-input: 18px;
+            --font-size-h3: 16px;
+            --font-size-h2: 20px;
+            --font-size-h1: 22px;
+
+            /* Shadows - Neomorphism */
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 12px 32px rgba(0, 0, 0, 0.6);
+            --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== GLOBAL STYLES ===== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-3);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px var(--space-3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green-primary));
+            border-radius: 6px;
+        }
+
+        .menu-button {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all 200ms ease-out;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            position: relative;
+        }
+
+        .menu-icon::before,
+        .menu-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            left: 0;
+        }
+
+        .menu-icon::before { top: -7px; }
+        .menu-icon::after { top: 7px; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 200ms ease-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+            position: relative;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green-primary), var(--accent-green-secondary));
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: var(--radius-medium);
+            font-size: var(--font-size-body);
+            box-shadow: var(--shadow-soft), var(--inner-glow);
+            min-width: 160px;
+            height: 40px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-medium), var(--inner-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary.btn-large {
+            width: 100%;
+            height: 56px;
+            font-size: var(--font-size-body-large);
+            border-radius: 14px;
+            padding: 16px var(--space-3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: var(--radius-small);
+            font-size: var(--font-size-body);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-small {
+            padding: 4px var(--space-1);
+            font-size: var(--font-size-small);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: var(--space-1);
+        }
+
+        .icon-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            display: flex;
+            gap: var(--space-3);
+            margin-top: var(--space-3);
+        }
+
+        .swap-area {
+            flex: 0 0 60%;
+            max-width: 720px;
+        }
+
+        .sidebar {
+            flex: 0 0 40%;
+            max-width: 480px;
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+            height: 56px;
+        }
+
+        .page-title h1 {
+            font-size: var(--font-size-h1);
+            font-weight: 600;
+        }
+
+        .title-actions {
+            display: flex;
+            gap: var(--space-1);
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow-medium), var(--inner-glow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== SWAP CARD ===== */
+        .swap-card {
+            padding: 20px;
+            margin-bottom: var(--space-1-5);
+        }
+
+        .swap-section {
+            margin-bottom: var(--space-1);
+        }
+
+        .swap-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-1);
+        }
+
+        .swap-label {
+            font-size: var(--font-size-body);
+            color: var(--text-secondary);
+        }
+
+        .balance-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: var(--font-size-small);
+            color: var(--text-secondary);
+        }
+
+        .swap-input-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-medium);
+            padding: 12px var(--space-2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            transition: border-color 200ms ease-out;
+        }
+
+        .swap-input-container:focus-within {
+            border-color: var(--accent-blue);
+        }
+
+        .swap-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: var(--font-size-input);
+            font-weight: 500;
+            width: 50%;
+        }
+
+        .swap-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .token-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-1-5);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-small);
+            cursor: pointer;
+            transition: all 200ms ease-out;
+        }
+
+        .token-selector:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .token-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .token-name {
+            font-size: var(--font-size-body-large);
+            font-weight: 500;
+        }
+
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== SWAP SWITCH BUTTON ===== */
+        .swap-switch-container {
+            display: flex;
+            justify-content: center;
+            margin: -20px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .swap-switch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
+            border: 3px solid var(--bg-primary);
+            box-shadow: var(--shadow-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 200ms ease-out;
+        }
+
+        .swap-switch:hover {
+            transform: scale(1.1) rotate(180deg);
+            box-shadow: var(--shadow-strong);
+        }
+
+        /* ===== INFO PANEL ===== */
+        .info-panel {
+            padding: var(--space-2);
+            margin-bottom: var(--space-1-5);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            gap: var(--space-2);
+            margin-bottom: var(--space-1-5);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: var(--font-size-small);
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-size: var(--font-size-body);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-1-5);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .route-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .route-type {
+            font-size: var(--font-size-body);
+            font-weight: 500;
+        }
+
+        .route-fee {
+            font-size: var(--font-size-body);
+            color: var(--accent-green-primary);
+            padding: 4px var(--space-1);
+            background: rgba(0, 211, 149, 0.1);
+            border-radius: 6px;
+        }
+
+        /* ===== TOP POOLS ===== */
+        .sidebar-header {
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+        }
+
+        .pool-card {
+            padding: var(--space-2);
+            margin-bottom: var(--space-1-5);
+            cursor: pointer;
+            transition: all 200ms ease-out;
+        }
+
+        .pool-card:hover {
+            transform: scale(1.01);
+            box-shadow: var(--shadow-strong), var(--inner-glow);
+        }
+
+        .pool-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1-5);
+            margin-bottom: var(--space-1-5);
+        }
+
+        .pool-icons {
+            display: flex;
+            position: relative;
+            width: 56px;
+            height: 32px;
+        }
+
+        .pool-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-primary);
+            position: absolute;
+        }
+
+        .pool-icon:first-child {
+            left: 0;
+            z-index: 1;
+        }
+
+        .pool-icon:last-child {
+            left: 24px;
+            z-index: 0;
+        }
+
+        .pool-name {
+            font-size: var(--font-size-body-large);
+            font-weight: 500;
+        }
+
+        .pool-subtitle {
+            font-size: var(--font-size-small);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-1-5);
+        }
+
+        .pool-amounts {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: var(--space-1-5);
+        }
+
+        .pool-amount {
+            font-size: var(--font-size-body);
+            color: var(--text-secondary);
+        }
+
+        .pool-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-1-5);
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-label {
+            font-size: var(--font-size-tiny);
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-size: var(--font-size-body);
+            font-weight: 500;
+        }
+
+        .metric-value.positive {
+            color: var(--accent-green-primary);
+        }
+
+        /* ===== ICONS (SVG) ===== */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2px;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .swap-area,
+            .sidebar {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
+            .container {
+                padding: 0 var(--space-2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>Onyx</span>
+        </div>
+
+        <button class="menu-button" aria-label="Menu">
+            <span class="menu-icon"></span>
+        </button>
+
+        <button class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            Connect Wallet
+        </button>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <div class="main-container">
+            <!-- SWAP AREA -->
+            <div class="swap-area">
+                <!-- Page Title -->
+                <div class="page-title">
+                    <h1>Swap</h1>
+                    <div class="title-actions">
+                        <button class="btn icon-button" aria-label="Settings">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 1v6m0 6v6m6-6h6m-6 0H1"></path>
+                            </svg>
+                        </button>
+                        <button class="btn icon-button" aria-label="Refresh">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Swap Card -->
+                <div class="card swap-card">
+                    <!-- From Section -->
+                    <div class="swap-section">
+                        <div class="swap-header">
+                            <span class="swap-label">From</span>
+                            <div class="balance-section">
+                                <span>Balance: 0</span>
+                                <button class="btn btn-secondary btn-small">MAX</button>
+                            </div>
+                        </div>
+                        <div class="swap-input-container">
+                            <input type="text" class="swap-input" placeholder="0.0" value="10">
+                            <div class="token-selector">
+                                <div class="token-icon">$</div>
+                                <span class="token-name">axlUSDC(...)</span>
+                                <svg class="icon dropdown-arrow" viewBox="0 0 24 24">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Switch Button -->
+                    <div class="swap-switch-container">
+                        <button class="swap-switch" aria-label="Switch tokens">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <polyline points="17 11 12 6 7 11"></polyline>
+                                <polyline points="7 13 12 18 17 13"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- To Section -->
+                    <div class="swap-section">
+                        <div class="swap-header">
+                            <span class="swap-label">To</span>
+                            <div class="balance-section">
+                                <span>Balance: 0</span>
+                                <button class="btn btn-secondary btn-small">MAX</button>
+                            </div>
+                        </div>
+                        <div class="swap-input-container">
+                            <input type="text" class="swap-input" placeholder="0.0" value="3.627746213" readonly>
+                            <div class="token-selector">
+                                <div class="token-icon" style="background: linear-gradient(135deg, #00d395, #10b981);">G</div>
+                                <span class="token-name">GNK</span>
+                                <svg class="icon dropdown-arrow" viewBox="0 0 24 24">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="card info-panel">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Rate:</span>
+                            <span class="info-value">1 axlUSDC(neutron)<br>= 0.362775 GNK</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Slippage:</span>
+                            <span class="info-value">0.1%</span>
+                        </div>
+                    </div>
+                    <div class="info-item" style="margin-bottom: var(--space-1-5);">
+                        <span class="info-label">Min. Received:</span>
+                        <span class="info-value">3.624118 GNK</span>
+                    </div>
+                    <div class="route-info">
+                        <div class="route-left">
+                            <span class="route-type">Direct AMM</span>
+                            <span class="route-fee">0.9%</span>
+                        </div>
+                        <button class="btn btn-secondary">
+                            Details
+                            <svg class="icon dropdown-arrow" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Primary Action Button -->
+                <button class="btn btn-primary btn-large">
+                    <svg class="icon" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    Connect Wallet
+                </button>
+            </div>
+
+            <!-- SIDEBAR - TOP POOLS -->
+            <div class="sidebar">
+                <h2 class="sidebar-header">Top Pools</h2>
+
+                <!-- Pool Card 1 -->
+                <div class="card pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00d395, #10b981);"></div>
+                            <div class="pool-icon" style="background: var(--accent-blue);"></div>
+                        </div>
+                        <div>
+                            <div class="pool-name">GNK/axlUSDC(neutron)</div>
+                            <div class="pool-subtitle">Liquidity Pool</div>
+                        </div>
+                    </div>
+                    <div class="pool-amounts">
+                        <div class="pool-amount">602.5 GNK</div>
+                        <div class="pool-amount">1.6K axlUSDC(neutron)</div>
+                    </div>
+                    <div class="pool-metrics">
+                        <div class="metric">
+                            <span class="metric-label">30d fees:</span>
+                            <span class="metric-value">$2.24</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APY (30d):</span>
+                            <span class="metric-value positive">0.83%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pool Card 2 -->
+                <div class="card pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00d395, #10b981);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #10b981, #00d395);"></div>
+                        </div>
+                        <div>
+                            <div class="pool-name">GNK/axlUSDT(neutron)</div>
+                            <div class="pool-subtitle">Liquidity Pool</div>
+                        </div>
+                    </div>
+                    <div class="pool-amounts">
+                        <div class="pool-amount">102.5 GNK</div>
+                        <div class="pool-amount">311.8 axlUSDT(neutron)</div>
+                    </div>
+                    <div class="pool-metrics">
+                        <div class="metric">
+                            <span class="metric-label">30d fees:</span>
+                            <span class="metric-value">$1.17</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APY (30d):</span>
+                            <span class="metric-value positive">2.29%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Basic interactivity
+        document.querySelector('.swap-switch').addEventListener('click', function() {
+            const fromInput = document.querySelector('.swap-section:first-child .swap-input');
+            const toInput = document.querySelector('.swap-section:last-child .swap-input');
+
+            // Swap values
+            const temp = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = temp;
+
+            // Visual feedback
+            this.style.transform = 'scale(0.9) rotate(180deg)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 200);
+        });
+
+        // Pool card click
+        document.querySelectorAll('.pool-card').forEach(card => {
+            card.addEventListener('click', function() {
+                console.log('Pool card clicked');
+                // Add visual feedback
+                this.style.transform = 'scale(0.99)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
