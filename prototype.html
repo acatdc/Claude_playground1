@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onyx DEX - Swap Prototype</title>
+    <title>Onyx DEX - Swap Prototype Enhanced</title>
     <style>
         /* ===== CSS RESET ===== */
         * {
@@ -15,23 +15,22 @@
         /* ===== DESIGN SYSTEM ===== */
         :root {
             /* Colors - Background */
-            --bg-primary: #0f1015;
-            --bg-secondary: #1a1d29;
-            --bg-card-start: #2a2d3a;
-            --bg-card-end: #1f2230;
+            --bg-primary: #0a0b0f;
+            --bg-secondary: #14151f;
+            --bg-card-dark: #1a1d29;
+            --bg-card-light: #252937;
 
             /* Colors - Accents */
             --accent-green-primary: #00d395;
             --accent-green-secondary: #10b981;
             --accent-red-primary: #ff5252;
-            --accent-red-secondary: #ef4444;
             --accent-blue: #5b8cff;
 
             /* Colors - Text */
             --text-primary: #ffffff;
             --text-secondary: #8b8e98;
 
-            /* Spacing (8px grid) */
+            /* Spacing */
             --space-1: 8px;
             --space-1-5: 12px;
             --space-2: 16px;
@@ -52,22 +51,33 @@
             --font-size-h3: 16px;
             --font-size-h2: 20px;
             --font-size-h1: 22px;
-
-            /* Shadows - Neomorphism */
-            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.5);
-            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.4);
-            --shadow-strong: 0 12px 32px rgba(0, 0, 0, 0.6);
-            --inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         /* ===== GLOBAL STYLES ===== */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', 'Segoe UI', 'Roboto', sans-serif;
-            background-color: var(--bg-primary);
+            background: radial-gradient(ellipse at top, #14151f 0%, #0a0b0f 100%);
             color: var(--text-primary);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Subtle background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(91, 140, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 211, 149, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* ===== CONTAINER ===== */
@@ -75,6 +85,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 var(--space-3);
+            position: relative;
+            z-index: 1;
         }
 
         /* ===== HEADER ===== */
@@ -84,6 +96,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px var(--space-3);
+            position: relative;
+            z-index: 10;
         }
 
         .logo {
@@ -97,26 +111,33 @@
         .logo-icon {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green-primary));
+            background: linear-gradient(135deg, #5b8cff 0%, #00d395 100%);
             border-radius: 6px;
+            box-shadow:
+                0 4px 12px rgba(91, 140, 255, 0.3),
+                0 0 20px rgba(0, 211, 149, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .menu-button {
             width: 40px;
             height: 40px;
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-primary);
             transition: all 200ms ease-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .menu-button:hover {
-            transform: scale(1.05);
-            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
         .menu-icon {
@@ -145,7 +166,7 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
-            transition: all 200ms ease-out;
+            transition: all 250ms ease-out;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -154,24 +175,31 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-green-primary), var(--accent-green-secondary));
-            color: var(--text-primary);
+            background: linear-gradient(135deg, #00d395 0%, #10b981 100%);
+            color: #ffffff;
             padding: 12px 20px;
             border-radius: var(--radius-medium);
             font-size: var(--font-size-body);
-            box-shadow: var(--shadow-soft), var(--inner-glow);
             min-width: 160px;
             height: 40px;
+            box-shadow:
+                0 4px 16px rgba(0, 211, 149, 0.4),
+                0 8px 24px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-medium), var(--inner-glow);
+            transform: translateY(-2px);
+            box-shadow:
+                0 6px 20px rgba(0, 211, 149, 0.5),
+                0 12px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
             filter: brightness(1.1);
         }
 
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
 
         .btn-primary.btn-large {
@@ -180,6 +208,11 @@
             font-size: var(--font-size-body-large);
             border-radius: 14px;
             padding: 16px var(--space-3);
+            box-shadow:
+                0 8px 24px rgba(0, 211, 149, 0.4),
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
         }
 
         .btn-secondary {
@@ -189,10 +222,14 @@
             border-radius: var(--radius-small);
             font-size: var(--font-size-body);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .btn-small {
@@ -205,15 +242,17 @@
         .icon-button {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: var(--space-1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .icon-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         /* ===== MAIN LAYOUT ===== */
@@ -245,6 +284,7 @@
         .page-title h1 {
             font-size: var(--font-size-h1);
             font-weight: 600;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .title-actions {
@@ -252,12 +292,30 @@
             gap: var(--space-1);
         }
 
-        /* ===== CARDS ===== */
+        /* ===== CARDS - Enhanced Neomorphism ===== */
         .card {
-            background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
+            background: linear-gradient(145deg, #1e2230 0%, #181b26 100%);
             border-radius: var(--radius-large);
-            box-shadow: var(--shadow-medium), var(--inner-glow);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        /* Subtle inner glow */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+            border-radius: var(--radius-large) var(--radius-large) 0 0;
+            pointer-events: none;
         }
 
         /* ===== SWAP CARD ===== */
@@ -284,6 +342,7 @@
         .swap-label {
             font-size: var(--font-size-body);
             color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .balance-section {
@@ -295,19 +354,25 @@
         }
 
         .swap-input-container {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: var(--radius-medium);
             padding: 12px var(--space-2);
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 56px;
-            transition: border-color 200ms ease-out;
+            transition: all 250ms ease-out;
+            box-shadow:
+                inset 0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(0, 0, 0, 0.3);
         }
 
         .swap-input-container:focus-within {
-            border-color: var(--accent-blue);
+            border-color: rgba(91, 140, 255, 0.5);
+            box-shadow:
+                inset 0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 0 2px rgba(91, 140, 255, 0.2);
         }
 
         .swap-input {
@@ -321,7 +386,7 @@
         }
 
         .swap-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.2);
         }
 
         .token-selector {
@@ -330,13 +395,19 @@
             gap: var(--space-1);
             padding: var(--space-1) var(--space-1-5);
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-small);
             cursor: pointer;
             transition: all 200ms ease-out;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .token-selector:hover {
             background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .token-icon {
@@ -349,6 +420,9 @@
             justify-content: center;
             font-size: 12px;
             font-weight: 600;
+            box-shadow:
+                0 2px 8px rgba(91, 140, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .token-name {
@@ -375,26 +449,34 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--bg-card-start), var(--bg-card-end));
+            background: linear-gradient(145deg, #1e2230, #181b26);
             border: 3px solid var(--bg-primary);
-            box-shadow: var(--shadow-medium);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 200ms ease-out;
+            transition: all 250ms ease-out;
+            box-shadow:
+                0 4px 16px rgba(0, 0, 0, 0.6),
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .swap-switch:hover {
             transform: scale(1.1) rotate(180deg);
-            box-shadow: var(--shadow-strong);
+            box-shadow:
+                0 8px 24px rgba(0, 0, 0, 0.7),
+                0 4px 12px rgba(91, 140, 255, 0.3);
         }
 
         /* ===== INFO PANEL ===== */
         .info-panel {
             padding: var(--space-2);
             margin-bottom: var(--space-1-5);
-            background: rgba(0, 0, 0, 0.3);
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            box-shadow:
+                inset 0 2px 12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(0, 0, 0, 0.3);
         }
 
         .info-grid {
@@ -444,8 +526,11 @@
             font-size: var(--font-size-body);
             color: var(--accent-green-primary);
             padding: 4px var(--space-1);
-            background: rgba(0, 211, 149, 0.1);
+            background: rgba(0, 211, 149, 0.15);
             border-radius: 6px;
+            box-shadow:
+                0 0 12px rgba(0, 211, 149, 0.2),
+                inset 0 1px 0 rgba(0, 211, 149, 0.2);
         }
 
         /* ===== TOP POOLS ===== */
@@ -453,18 +538,22 @@
             font-size: var(--font-size-h2);
             font-weight: 600;
             margin-bottom: var(--space-2);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .pool-card {
             padding: var(--space-2);
             margin-bottom: var(--space-1-5);
             cursor: pointer;
-            transition: all 200ms ease-out;
+            transition: all 250ms ease-out;
         }
 
         .pool-card:hover {
-            transform: scale(1.01);
-            box-shadow: var(--shadow-strong), var(--inner-glow);
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.7),
+                0 8px 24px rgba(0, 211, 149, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .pool-header {
@@ -487,16 +576,19 @@
             border-radius: 50%;
             border: 2px solid var(--bg-primary);
             position: absolute;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .pool-icon:first-child {
             left: 0;
-            z-index: 1;
+            z-index: 2;
         }
 
         .pool-icon:last-child {
             left: 24px;
-            z-index: 0;
+            z-index: 1;
         }
 
         .pool-name {
@@ -546,6 +638,7 @@
 
         .metric-value.positive {
             color: var(--accent-green-primary);
+            text-shadow: 0 0 8px rgba(0, 211, 149, 0.3);
         }
 
         /* ===== ICONS (SVG) ===== */
@@ -723,7 +816,7 @@
                     <div class="pool-header">
                         <div class="pool-icons">
                             <div class="pool-icon" style="background: linear-gradient(135deg, #00d395, #10b981);"></div>
-                            <div class="pool-icon" style="background: var(--accent-blue);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7b9eff);"></div>
                         </div>
                         <div>
                             <div class="pool-name">GNK/axlUSDC(neutron)</div>
@@ -800,7 +893,7 @@
             card.addEventListener('click', function() {
                 console.log('Pool card clicked');
                 // Add visual feedback
-                this.style.transform = 'scale(0.99)';
+                this.style.transform = 'translateY(-4px)';
                 setTimeout(() => {
                     this.style.transform = '';
                 }, 100);
