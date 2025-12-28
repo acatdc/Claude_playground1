@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onyx DEX - Compact</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #070810;
+            --accent-green: #00d395;
+            --accent-green-bright: #00ffb3;
+            --accent-blue: #5b8cff;
+            --text-primary: #ffffff;
+            --text-secondary: #8b8e98;
+
+            /* Compact spacing - 40% меньше */
+            --space-1: 6px;
+            --space-1-5: 8px;
+            --space-2: 10px;
+            --space-2-5: 12px;
+            --space-3: 14px;
+
+            --radius-small: 6px;
+            --radius-medium: 10px;
+            --radius-large: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', 'Inter', sans-serif;
+            background: #070810;
+            color: var(--text-primary);
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(91, 140, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 70% 60%, rgba(0, 211, 149, 0.10) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 var(--space-3);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== COMPACT HEADER ===== */
+        .header {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px var(--space-3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #5b8cff 0%, #00ffb3 100%);
+            border-radius: 5px;
+            box-shadow:
+                0 0 20px rgba(0, 255, 179, 0.5),
+                0 0 40px rgba(91, 140, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-button {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            position: relative;
+        }
+
+        .menu-icon::before,
+        .menu-icon::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background: var(--text-primary);
+            left: 0;
+        }
+
+        .menu-icon::before { top: -6px; }
+        .menu-icon::after { top: 6px; }
+
+        /* ===== COMPACT BUTTONS ===== */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 250ms ease-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ffb3 0%, #00d395 50%, #10b981 100%);
+            color: #000000;
+            padding: 10px 16px;
+            border-radius: var(--radius-medium);
+            font-size: 13px;
+            min-width: 140px;
+            height: 36px;
+            box-shadow:
+                0 0 20px rgba(0, 255, 179, 0.5),
+                0 0 40px rgba(0, 211, 149, 0.3),
+                0 6px 20px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-primary.btn-large {
+            width: 100%;
+            height: 48px;
+            font-size: 15px;
+            border-radius: 12px;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-small {
+            padding: 3px 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .icon-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== COMPACT LAYOUT ===== */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2-5);
+            margin-top: var(--space-2-5);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+            height: 40px;
+        }
+
+        .page-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .title-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ===== COMPACT CARDS ===== */
+        .card {
+            background: linear-gradient(145deg, #1a1e2e 0%, #12151f 100%);
+            border-radius: var(--radius-large);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 0 40px rgba(91, 140, 255, 0.12),
+                0 12px 40px rgba(0, 0, 0, 0.7),
+                0 6px 24px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 100%);
+            border-radius: var(--radius-large) var(--radius-large) 0 0;
+            pointer-events: none;
+        }
+
+        .swap-card {
+            padding: 12px;
+            margin-bottom: var(--space-2);
+        }
+
+        .swap-section {
+            margin-bottom: 6px;
+        }
+
+        .swap-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .swap-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .balance-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .swap-input-container {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-medium);
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+            box-shadow:
+                inset 0 3px 12px rgba(0, 0, 0, 0.5),
+                0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .swap-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 500;
+            width: 50%;
+        }
+
+        .swap-input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .token-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .token-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            box-shadow:
+                0 0 15px rgba(91, 140, 255, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .token-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .dropdown-arrow {
+            width: 14px;
+            height: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== COMPACT SWITCH BUTTON ===== */
+        .swap-switch-container {
+            display: flex;
+            justify-content: center;
+            margin: -16px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .swap-switch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #1a1e2e, #12151f);
+            border: 2px solid #070810;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow:
+                0 0 20px rgba(91, 140, 255, 0.3),
+                0 6px 20px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== COMPACT INFO PANEL ===== */
+        .info-panel {
+            padding: 10px;
+            margin-bottom: var(--space-2);
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            box-shadow:
+                inset 0 3px 12px rgba(0, 0, 0, 0.6),
+                0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-2);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .route-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .route-type {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .route-fee {
+            font-size: 12px;
+            color: var(--accent-green);
+            padding: 3px 6px;
+            background: rgba(0, 211, 149, 0.15);
+            border-radius: 5px;
+            box-shadow: 0 0 12px rgba(0, 211, 149, 0.3);
+            text-shadow: 0 0 8px rgba(0, 255, 179, 0.4);
+        }
+
+        /* ===== COMPACT TOP POOLS ===== */
+        .sidebar-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .pool-card {
+            padding: 10px;
+            margin-bottom: var(--space-2);
+            cursor: pointer;
+        }
+
+        .pool-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .pool-icons {
+            display: flex;
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .pool-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #070810;
+            position: absolute;
+            box-shadow:
+                0 0 12px rgba(91, 140, 255, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .pool-icon:first-child {
+            left: 0;
+            z-index: 2;
+        }
+
+        .pool-icon:last-child {
+            left: 20px;
+            z-index: 1;
+        }
+
+        .pool-name {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .pool-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-2);
+        }
+
+        .pool-amounts {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .pool-amount {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .pool-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2);
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .metric-value.positive {
+            color: var(--accent-green-bright);
+            text-shadow:
+                0 0 12px rgba(0, 255, 179, 0.5),
+                0 0 24px rgba(0, 211, 149, 0.3);
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2px;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-2-5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>Onyx</span>
+        </div>
+
+        <button class="menu-button" aria-label="Menu">
+            <span class="menu-icon"></span>
+        </button>
+
+        <button class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            Connect Wallet
+        </button>
+    </header>
+
+    <div class="container">
+        <div class="main-container">
+            <div class="page-title">
+                <h1>Swap</h1>
+                <div class="title-actions">
+                    <button class="btn icon-button" aria-label="Settings">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m6-6h6m-6 0H1"></path>
+                        </svg>
+                    </button>
+                    <button class="btn icon-button" aria-label="Refresh">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card swap-card">
+                <div class="swap-section">
+                    <div class="swap-header">
+                        <span class="swap-label">From</span>
+                        <div class="balance-section">
+                            <span>Balance: 0</span>
+                            <button class="btn btn-secondary btn-small">MAX</button>
+                        </div>
+                    </div>
+                    <div class="swap-input-container">
+                        <input type="text" class="swap-input" placeholder="0.0" value="10">
+                        <div class="token-selector">
+                            <div class="token-icon">$</div>
+                            <span class="token-name">axlUSDC(...)</span>
+                            <svg class="icon dropdown-arrow" viewBox="0 0 24 24">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swap-switch-container">
+                    <button class="swap-switch" aria-label="Switch tokens">
+                        <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                            <polyline points="17 11 12 6 7 11"></polyline>
+                            <polyline points="7 13 12 18 17 13"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="swap-section">
+                    <div class="swap-header">
+                        <span class="swap-label">To</span>
+                        <div class="balance-section">
+                            <span>Balance: 0</span>
+                            <button class="btn btn-secondary btn-small">MAX</button>
+                        </div>
+                    </div>
+                    <div class="swap-input-container">
+                        <input type="text" class="swap-input" placeholder="0.0" value="3.627746213" readonly>
+                        <div class="token-selector">
+                            <div class="token-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);">G</div>
+                            <span class="token-name">GNK</span>
+                            <svg class="icon dropdown-arrow" viewBox="0 0 24 24">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card info-panel">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Rate:</span>
+                        <span class="info-value">1 axlUSDC(neutron)<br>= 0.362775 GNK</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Slippage:</span>
+                        <span class="info-value">0.1%</span>
+                    </div>
+                </div>
+                <div class="info-item" style="margin-bottom: var(--space-2);">
+                    <span class="info-label">Min. Received:</span>
+                    <span class="info-value">3.624118 GNK</span>
+                </div>
+                <div class="route-info">
+                    <div class="route-left">
+                        <span class="route-type">Direct AMM</span>
+                        <span class="route-fee">0.9%</span>
+                    </div>
+                    <button class="btn btn-secondary">
+                        Details
+                        <svg class="icon dropdown-arrow" viewBox="0 0 24 24" style="width: 12px; height: 12px;">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-large">
+                <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                Connect Wallet
+            </button>
+
+            <h2 class="sidebar-header">Top Pools</h2>
+
+            <div class="card pool-card">
+                <div class="pool-header">
+                    <div class="pool-icons">
+                        <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
+                        <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7ba4ff);"></div>
+                    </div>
+                    <div>
+                        <div class="pool-name">GNK/axlUSDC(neutron)</div>
+                        <div class="pool-subtitle">Liquidity Pool</div>
+                    </div>
+                </div>
+                <div class="pool-amounts">
+                    <div class="pool-amount">602.5 GNK</div>
+                    <div class="pool-amount">1.6K axlUSDC(neutron)</div>
+                </div>
+                <div class="pool-metrics">
+                    <div class="metric">
+                        <span class="metric-label">30d fees:</span>
+                        <span class="metric-value">$2.24</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">APY (30d):</span>
+                        <span class="metric-value positive">0.83%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card pool-card">
+                <div class="pool-header">
+                    <div class="pool-icons">
+                        <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
+                        <div class="pool-icon" style="background: linear-gradient(135deg, #10b981, #00d395);"></div>
+                    </div>
+                    <div>
+                        <div class="pool-name">GNK/axlUSDT(neutron)</div>
+                        <div class="pool-subtitle">Liquidity Pool</div>
+                    </div>
+                </div>
+                <div class="pool-amounts">
+                    <div class="pool-amount">102.5 GNK</div>
+                    <div class="pool-amount">311.8 axlUSDT(neutron)</div>
+                </div>
+                <div class="pool-metrics">
+                    <div class="metric">
+                        <span class="metric-label">30d fees:</span>
+                        <span class="metric-value">$1.17</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">APY (30d):</span>
+                        <span class="metric-value positive">2.29%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.swap-switch').addEventListener('click', function() {
+            const fromInput = document.querySelector('.swap-section:first-child .swap-input');
+            const toInput = document.querySelector('.swap-section:last-child .swap-input');
+
+            const temp = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = temp;
+        });
+
+        document.querySelectorAll('.pool-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'translateY(-3px)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 120);
+            });
+        });
+    </script>
+</body>
+</html>
