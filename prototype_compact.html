@@ -432,35 +432,41 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
+        .pools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2);
+        }
+
         .pool-card {
-            padding: 10px;
-            margin-bottom: var(--space-2);
+            padding: 8px;
             cursor: pointer;
         }
 
         .pool-header {
             display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-2);
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 6px;
         }
 
         .pool-icons {
             display: flex;
             position: relative;
-            width: 44px;
-            height: 24px;
+            width: 32px;
+            height: 18px;
+            flex-shrink: 0;
         }
 
         .pool-icon {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             border: 2px solid #070810;
             position: absolute;
             box-shadow:
-                0 0 12px rgba(91, 140, 255, 0.4),
-                0 2px 8px rgba(0, 0, 0, 0.4),
+                0 0 10px rgba(91, 140, 255, 0.4),
+                0 2px 6px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
@@ -470,39 +476,42 @@
         }
 
         .pool-icon:last-child {
-            left: 20px;
+            left: 14px;
             z-index: 1;
         }
 
+        .pool-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .pool-name {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             line-height: 1.2;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .pool-subtitle {
-            font-size: 11px;
+            font-size: 9px;
             color: var(--text-secondary);
-            margin-bottom: var(--space-2);
+            line-height: 1.2;
         }
 
         .pool-amounts {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            margin-bottom: var(--space-2);
-        }
-
-        .pool-amount {
-            font-size: 12px;
+            font-size: 10px;
             color: var(--text-secondary);
             line-height: 1.3;
+            margin-bottom: 6px;
         }
 
         .pool-metrics {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--space-2);
+            gap: 6px;
         }
 
         .metric {
@@ -512,13 +521,15 @@
         }
 
         .metric-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-secondary);
+            line-height: 1.2;
         }
 
         .metric-value {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
+            line-height: 1.2;
         }
 
         .metric-value.positive {
@@ -673,56 +684,52 @@
 
             <h2 class="sidebar-header">Top Pools</h2>
 
-            <div class="card pool-card">
-                <div class="pool-header">
-                    <div class="pool-icons">
-                        <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
-                        <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7ba4ff);"></div>
+            <div class="pools-grid">
+                <div class="card pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #5b8cff, #7ba4ff);"></div>
+                        </div>
+                        <div class="pool-info">
+                            <div class="pool-name">GNK/axlUSDC(neutron)</div>
+                            <div class="pool-subtitle">Liquidity Pool</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="pool-name">GNK/axlUSDC(neutron)</div>
-                        <div class="pool-subtitle">Liquidity Pool</div>
+                    <div class="pool-amounts">602.5 GNK / 1.6K axlUSDC(neutron)</div>
+                    <div class="pool-metrics">
+                        <div class="metric">
+                            <span class="metric-label">30d fees:</span>
+                            <span class="metric-value">$2.24</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APY (30d):</span>
+                            <span class="metric-value positive">0.83%</span>
+                        </div>
                     </div>
                 </div>
-                <div class="pool-amounts">
-                    <div class="pool-amount">602.5 GNK</div>
-                    <div class="pool-amount">1.6K axlUSDC(neutron)</div>
-                </div>
-                <div class="pool-metrics">
-                    <div class="metric">
-                        <span class="metric-label">30d fees:</span>
-                        <span class="metric-value">$2.24</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">APY (30d):</span>
-                        <span class="metric-value positive">0.83%</span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card pool-card">
-                <div class="pool-header">
-                    <div class="pool-icons">
-                        <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
-                        <div class="pool-icon" style="background: linear-gradient(135deg, #10b981, #00d395);"></div>
+                <div class="card pool-card">
+                    <div class="pool-header">
+                        <div class="pool-icons">
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #00ffb3, #00d395);"></div>
+                            <div class="pool-icon" style="background: linear-gradient(135deg, #10b981, #00d395);"></div>
+                        </div>
+                        <div class="pool-info">
+                            <div class="pool-name">GNK/axlUSDT(neutron)</div>
+                            <div class="pool-subtitle">Liquidity Pool</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="pool-name">GNK/axlUSDT(neutron)</div>
-                        <div class="pool-subtitle">Liquidity Pool</div>
-                    </div>
-                </div>
-                <div class="pool-amounts">
-                    <div class="pool-amount">102.5 GNK</div>
-                    <div class="pool-amount">311.8 axlUSDT(neutron)</div>
-                </div>
-                <div class="pool-metrics">
-                    <div class="metric">
-                        <span class="metric-label">30d fees:</span>
-                        <span class="metric-value">$1.17</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">APY (30d):</span>
-                        <span class="metric-value positive">2.29%</span>
+                    <div class="pool-amounts">102.5 GNK / 311.8 axlUSDT(neutron)</div>
+                    <div class="pool-metrics">
+                        <div class="metric">
+                            <span class="metric-label">30d fees:</span>
+                            <span class="metric-value">$1.17</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APY (30d):</span>
+                            <span class="metric-value positive">2.29%</span>
+                        </div>
                     </div>
                 </div>
             </div>
