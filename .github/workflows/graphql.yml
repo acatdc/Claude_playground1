@@ -1,42 +1,41 @@
-name: GraphQL Query
+name: External Data Relay
 
 on:
-  workflow_dispatch:
-    inputs:
-      query:
-        description: 'GraphQL query'
-        required: true
-        type: string
-      variables:
-        description: 'Variables (JSON)'
-        required: false
-        default: '{}'
-        type: string
+  push:
+    branches: [main]
+    paths: ['_query.json']
 
 jobs:
-  query:
+  relay:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run GraphQL query
+      - name: Execute request
         run: |
-          curl -s -X POST \
-            https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n --arg q "$QUERY" --argjson v "$VARIABLES" '{query: $q, variables: $v}')" \
-            > _result.json
+          URL=$(jq -r '.url' _query.json)
+          METHOD=$(jq -r '.method // "POST"' _query.json)
+          BODY=$(jq -c '.body // null' _query.json)
+
+          CURL_ARGS=(-s -X "$METHOD" -H "Content-Type: application/json")
+
+          while IFS= read -r header; do
+            CURL_ARGS+=(-H "$header")
+          done < <(jq -r '.headers // {} | to_entries[] | "\(.key): \(.value)"' _query.json)
+
+          if [ "$BODY" != "null" ]; then
+            CURL_ARGS+=(-d "$BODY")
+          fi
+
+          curl "${CURL_ARGS[@]}" "$URL" > _result.json
           cat _result.json
-        env:
-          QUERY: ${{ inputs.query }}
-          VARIABLES: ${{ inputs.variables }}
 
       - name: Commit result
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add _result.json
-          git commit -m "graphql result" || echo "no changes"
+          git commit -m "relay result" || echo "no changes"
           git push
