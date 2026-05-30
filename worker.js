@@ -75,7 +75,12 @@ export default {
       }, { headers: CORS });
     }
 
-    // MCP endpoint
+    // GET / — always public (discovery)
+    if (request.method === 'GET') {
+      return Response.json({ name: 'gmx-graphql-mcp', version: '1.0.0' }, { headers: CORS });
+    }
+
+    // POST / — require Bearer token
     const auth = request.headers.get('Authorization');
     if (!auth?.startsWith('Bearer ')) {
       return new Response(null, {
@@ -85,10 +90,6 @@ export default {
           'WWW-Authenticate': `Bearer resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`,
         },
       });
-    }
-
-    if (request.method === 'GET') {
-      return Response.json({ name: 'gmx-graphql-mcp', version: '1.0.0' }, { headers: CORS });
     }
 
     if (request.method === 'POST') {
