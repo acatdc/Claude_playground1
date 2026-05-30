@@ -1,0 +1,7 @@
+{
+  "url": "https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql",
+  "method": "POST",
+  "body": {
+    "query": "{ __schema { types { name kind fields(includeDeprecated: false) { name } } } }"
+  }
+}
