@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gmx-graphql": {
+      "type": "http",
+      "url": "https://sexyproxy.acat-4a9.workers.dev/"
+    }
+  }
+}
