@@ -54,10 +54,13 @@ export default {
 
     // Token exchange
     if (url.pathname === '/oauth/token' && request.method === 'POST') {
+      // Accept both JSON and form-encoded (Claude.ai sends form-encoded)
+      await request.text().catch(() => {});
       return Response.json({
         access_token: 'gmx-relay-access-token',
         token_type: 'bearer',
         expires_in: 86400,
+        scope: 'mcp',
       }, { headers: CORS });
     }
 
