@@ -1,33 +1,46 @@
 const GMX_ENDPOINT = 'https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql';
+const BASE_URL = 'https://sexyproxy.acat-4a9.workers.dev';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
+  'Access-Control-Allow-Methods': 'GET, POST, HEAD, OPTIONS, DELETE',
   'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Authorization',
+  'Access-Control-Expose-Headers': 'Mcp-Session-Id',
 };
 
 export default {
   async fetch(request) {
     const url = new URL(request.url);
 
-    if (request.method === 'OPTIONS') {
+    if (request.method === 'OPTIONS' || request.method === 'HEAD') {
       return new Response(null, { headers: CORS });
     }
 
-    // OAuth Discovery
-    if (url.pathname === '/.well-known/oauth-authorization-server') {
+    // RFC 9728 — Protected Resource Metadata (Claude.ai checks this first)
+    if (url.pathname === '/.well-known/oauth-protected-resource') {
       return Response.json({
-        issuer: url.origin,
-        authorization_endpoint: `${url.origin}/oauth/authorize`,
-        token_endpoint: `${url.origin}/oauth/token`,
-        registration_endpoint: `${url.origin}/oauth/register`,
-        response_types_supported: ['code'],
-        grant_types_supported: ['authorization_code'],
-        code_challenge_methods_supported: ['S256'],
+        resource: `${BASE_URL}/`,
+        authorization_servers: [BASE_URL],
+        scopes_supported: ['mcp'],
+        bearer_methods_supported: ['header'],
       }, { headers: CORS });
     }
 
-    // Dynamic Client Registration (RFC 7591)
+    // RFC 8414 — Authorization Server Metadata
+    if (url.pathname === '/.well-known/oauth-authorization-server') {
+      return Response.json({
+        issuer: BASE_URL,
+        authorization_endpoint: `${BASE_URL}/oauth/authorize`,
+        token_endpoint: `${BASE_URL}/oauth/token`,
+        registration_endpoint: `${BASE_URL}/oauth/register`,
+        response_types_supported: ['code'],
+        grant_types_supported: ['authorization_code'],
+        code_challenge_methods_supported: ['S256'],
+        scopes_supported: ['mcp'],
+      }, { headers: CORS });
+    }
+
+    // RFC 7591 — Dynamic Client Registration
     if (url.pathname === '/oauth/register' && request.method === 'POST') {
       const body = await request.json().catch(() => ({}));
       return Response.json({
@@ -36,6 +49,7 @@ export default {
         redirect_uris: body.redirect_uris || [],
         grant_types: ['authorization_code'],
         response_types: ['code'],
+        scope: 'mcp',
       }, { status: 201, headers: CORS });
     }
 
@@ -43,28 +57,40 @@ export default {
     if (url.pathname === '/oauth/authorize') {
       const redirectUri = url.searchParams.get('redirect_uri');
       const state = url.searchParams.get('state');
-      if (!redirectUri) {
-        return new Response('missing redirect_uri', { status: 400 });
-      }
+      if (!redirectUri) return new Response('missing redirect_uri', { status: 400 });
       const redirect = new URL(redirectUri);
-      redirect.searchParams.set('code', 'approved');
+      redirect.searchParams.set('code', 'auto-approved');
       if (state) redirect.searchParams.set('state', state);
       return Response.redirect(redirect.toString(), 302);
     }
 
-    // Token exchange
+    // Token endpoint — accept form-encoded or JSON
     if (url.pathname === '/oauth/token' && request.method === 'POST') {
-      // Accept both JSON and form-encoded (Claude.ai sends form-encoded)
       await request.text().catch(() => {});
       return Response.json({
-        access_token: 'gmx-relay-access-token',
-        token_type: 'bearer',
+        access_token: 'gmx-relay-token',
+        token_type: 'Bearer',
         expires_in: 86400,
         scope: 'mcp',
       }, { headers: CORS });
     }
 
-    // MCP — POST
+    // MCP endpoint
+    const auth = request.headers.get('Authorization');
+    if (!auth?.startsWith('Bearer ')) {
+      return new Response(null, {
+        status: 401,
+        headers: {
+          ...CORS,
+          'WWW-Authenticate': `Bearer resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`,
+        },
+      });
+    }
+
+    if (request.method === 'GET') {
+      return Response.json({ name: 'gmx-graphql-mcp', version: '1.0.0' }, { headers: CORS });
+    }
+
     if (request.method === 'POST') {
       let body;
       try {
@@ -79,33 +105,8 @@ export default {
       const isBatch = Array.isArray(body);
       const messages = isBatch ? body : [body];
       const responses = (await Promise.all(messages.map(handle))).filter(r => r !== null);
-
-      const wantsSSE = (request.headers.get('Accept') || '').includes('text/event-stream');
-      if (wantsSSE) {
-        const enc = new TextEncoder();
-        const stream = new ReadableStream({
-          start(ctrl) {
-            for (const r of responses) {
-              ctrl.enqueue(enc.encode(`event: message\ndata: ${JSON.stringify(r)}\n\n`));
-            }
-            ctrl.close();
-          },
-        });
-        return new Response(stream, {
-          headers: { ...CORS, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
-        });
-      }
-
       const result = isBatch ? responses : (responses[0] ?? null);
       return Response.json(result, { headers: CORS });
-    }
-
-    // GET — server info
-    if (request.method === 'GET') {
-      return Response.json(
-        { name: 'gmx-graphql-mcp', version: '1.0.0', transport: 'streamable-http' },
-        { headers: CORS }
-      );
     }
 
     return new Response('Method not allowed', { status: 405, headers: CORS });
