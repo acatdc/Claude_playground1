@@ -1,0 +1,42 @@
+name: GraphQL Query
+
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: 'GraphQL query'
+        required: true
+        type: string
+      variables:
+        description: 'Variables (JSON)'
+        required: false
+        default: '{}'
+        type: string
+
+jobs:
+  query:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run GraphQL query
+        run: |
+          curl -s -X POST \
+            https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg q "$QUERY" --argjson v "$VARIABLES" '{query: $q, variables: $v}')" \
+            > _result.json
+          cat _result.json
+        env:
+          QUERY: ${{ inputs.query }}
+          VARIABLES: ${{ inputs.variables }}
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add _result.json
+          git commit -m "graphql result" || echo "no changes"
+          git push
