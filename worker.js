@@ -1,4 +1,3 @@
-const GMX_ENDPOINT = 'https://gmx-solana-sqd.squids.live/gmx-solana-base:prod/api/graphql';
 const BASE_URL = 'https://sexyproxy.acat-4a9.workers.dev';
 
 const CORS = {
@@ -16,7 +15,7 @@ export default {
       return new Response(null, { headers: CORS });
     }
 
-    // RFC 9728 — Protected Resource Metadata (Claude.ai checks this first)
+    // RFC 9728 — Protected Resource Metadata
     if (url.pathname === '/.well-known/oauth-protected-resource') {
       return Response.json({
         resource: `${BASE_URL}/`,
@@ -53,7 +52,7 @@ export default {
       }, { status: 201, headers: CORS });
     }
 
-    // Authorization — auto-approve, redirect with code
+    // Authorization — auto-approve
     if (url.pathname === '/oauth/authorize') {
       const redirectUri = url.searchParams.get('redirect_uri');
       const state = url.searchParams.get('state');
@@ -64,11 +63,11 @@ export default {
       return Response.redirect(redirect.toString(), 302);
     }
 
-    // Token endpoint — accept form-encoded or JSON
+    // Token endpoint
     if (url.pathname === '/oauth/token' && request.method === 'POST') {
       await request.text().catch(() => {});
       return Response.json({
-        access_token: 'gmx-relay-token',
+        access_token: 'sexyproxy-token',
         token_type: 'Bearer',
         expires_in: 86400,
         scope: 'mcp',
@@ -77,10 +76,10 @@ export default {
 
     // GET / — server info
     if (request.method === 'GET') {
-      return Response.json({ name: 'gmx-graphql-mcp', version: '1.0.0' }, { headers: CORS });
+      return Response.json({ name: 'sexyproxy', version: '1.0.0' }, { headers: CORS });
     }
 
-    // POST / — MCP endpoint (no auth required)
+    // POST / — MCP endpoint
     if (request.method === 'POST') {
       let body;
       try {
@@ -96,10 +95,6 @@ export default {
       const messages = isBatch ? body : [body];
       const responses = (await Promise.all(messages.map(handle))).filter(r => r !== null);
       const result = isBatch ? responses : (responses[0] ?? null);
-
-      const auth = request.headers.get('Authorization') || 'none';
-      console.log('MCP POST', JSON.stringify({ auth: auth.slice(0, 20), body, result }));
-
       return Response.json(result, { headers: CORS });
     }
 
@@ -118,7 +113,7 @@ async function handle(msg) {
         result: {
           protocolVersion: '2025-11-25',
           capabilities: { tools: {} },
-          serverInfo: { name: 'gmx-graphql-mcp', version: '1.0.0' },
+          serverInfo: { name: 'sexyproxy', version: '1.0.0' },
         },
       };
 
@@ -130,15 +125,29 @@ async function handle(msg) {
         jsonrpc: '2.0', id,
         result: {
           tools: [{
-            name: 'graphql_query',
-            description: 'Execute a GraphQL query against the GMX Solana Base endpoint',
+            name: 'fetch',
+            description: 'Make an HTTP request to any external API (REST, GraphQL, etc.)',
             inputSchema: {
               type: 'object',
               properties: {
-                query: { type: 'string', description: 'GraphQL query string' },
-                variables: { type: 'object', description: 'Variables (optional)' },
+                url: {
+                  type: 'string',
+                  description: 'Target URL',
+                },
+                method: {
+                  type: 'string',
+                  description: 'HTTP method (default: POST)',
+                  enum: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+                },
+                headers: {
+                  type: 'object',
+                  description: 'Additional request headers (optional)',
+                },
+                body: {
+                  description: 'Request body — object or string (optional)',
+                },
               },
-              required: ['query'],
+              required: ['url'],
             },
           }],
         },
@@ -146,17 +155,27 @@ async function handle(msg) {
 
     case 'tools/call': {
       const { name, arguments: args } = params ?? {};
-      if (name !== 'graphql_query') {
+      if (name !== 'fetch') {
         return { jsonrpc: '2.0', id, error: { code: -32602, message: `Unknown tool: ${name}` } };
       }
       try {
-        const res = await fetch(GMX_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: args.query, variables: args.variables ?? {} }),
-        });
+        const method = args.method || 'POST';
+        const headers = { 'Content-Type': 'application/json', ...(args.headers || {}) };
+        const init = { method, headers };
+        if (args.body !== undefined) {
+          init.body = typeof args.body === 'string' ? args.body : JSON.stringify(args.body);
+        }
+        const res = await fetch(args.url, init);
         const text = await res.text();
-        return { jsonrpc: '2.0', id, result: { content: [{ type: 'text', text }] } };
+        return {
+          jsonrpc: '2.0', id,
+          result: {
+            content: [{
+              type: 'text',
+              text: `Status: ${res.status}\n\n${text}`,
+            }],
+          },
+        };
       } catch (e) {
         return {
           jsonrpc: '2.0', id,
