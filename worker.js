@@ -96,6 +96,10 @@ export default {
       const messages = isBatch ? body : [body];
       const responses = (await Promise.all(messages.map(handle))).filter(r => r !== null);
       const result = isBatch ? responses : (responses[0] ?? null);
+
+      const auth = request.headers.get('Authorization') || 'none';
+      console.log('MCP POST', JSON.stringify({ auth: auth.slice(0, 20), body, result }));
+
       return Response.json(result, { headers: CORS });
     }
 
