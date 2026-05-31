@@ -75,23 +75,12 @@ export default {
       }, { headers: CORS });
     }
 
-    // GET / — always public (discovery)
+    // GET / — server info
     if (request.method === 'GET') {
       return Response.json({ name: 'gmx-graphql-mcp', version: '1.0.0' }, { headers: CORS });
     }
 
-    // POST / — require Bearer token
-    const auth = request.headers.get('Authorization');
-    if (!auth?.startsWith('Bearer ')) {
-      return new Response(null, {
-        status: 401,
-        headers: {
-          ...CORS,
-          'WWW-Authenticate': `Bearer resource_metadata="${BASE_URL}/.well-known/oauth-protected-resource"`,
-        },
-      });
-    }
-
+    // POST / — MCP endpoint (no auth required)
     if (request.method === 'POST') {
       let body;
       try {
