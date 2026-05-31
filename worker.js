@@ -109,7 +109,7 @@ export default {
 
 async function handle(msg) {
   const { id, method, params } = msg;
-  if (!id) return null;
+  if (id === null || id === undefined) return null;
 
   switch (method) {
     case 'initialize':
